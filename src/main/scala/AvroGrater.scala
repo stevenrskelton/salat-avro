@@ -15,14 +15,17 @@
  */
 package com.banno.salat.avro
 
+
 import com.novus.salat._
 import org.apache.avro.Schema
 import org.apache.avro.io._
 import org.apache.avro.file._
+import org.apache.avro.generic._
 import org.apache.avro.specific._
-import org.apache.avro.reflect._
+//import org.apache.avro.reflect._
 import scala.collection.mutable.ListBuffer
-import java.io._
+import scala.collection.JavaConversions._
+import java.io.File
 
 trait AvroGrater[X <: AnyRef] {
   implicit val ctx: Context
@@ -55,7 +58,7 @@ trait AvroGrater[X <: AnyRef] {
 //deserialize from file with asObjectFromDataFile
 
 //Writing to File
-  lazy val asDataFileWriter: DataFileWriter[X] = new DataFileWriter[X](asDatumWriter)
+  lazy val asDataFileWriter: DataFileWriter[X] = new DataFileWriter[X](asDatumWriter) //reusing DatumWriter from above
 
   def serializeToDataFile(schema: Schema, outfile: File, x: X): DataFileWriter[X] = try {
     asDataFileWriter.create(schema, outfile)  
@@ -67,9 +70,47 @@ trait AvroGrater[X <: AnyRef] {
   }
 
 //Reading from File  
-
+ 
   def asObjectFromDataFile(infile: File): X = {
+//    val asSpecificDatumReader: SpecificDatumReader[X] = new SpecificDatumReader[X](myClass)//////////////myClass can't be MyRecord, MyRecord must be passed in 
+    
     val asDataFileReader: DataFileReader[X] = new DataFileReader[X](infile, asDatumReader)
+    
     asDataFileReader.next()
-  }  
+  }
+
+  def toStringFromDataFile(infile: File): String = {
+    val toDataFileReaderString: DataFileReader[X] = new DataFileReader[X](infile, asDatumReader)
+    toDataFileReaderString.next().toString
+  }
+
+ //   while (asDataFileReader.hasNext()) {
+ //     val record = asDataFileReader.next();
+ //     process record
+//      record
+ //   }
+
+  def asSchemaFromDataFile(infile: File): Schema = {
+     lazy val asDataFileReaderSchema: DataFileReader[X] = new DataFileReader[X](infile, asDatumReader)
+     asDataFileReaderSchema.getSchema()
+  }
+
+  def asBooleanFromDataFile(infile: File): Boolean = {
+    lazy val asDataFileReaderBoolean: DataFileReader[X] = new DataFileReader[X](infile, asDatumReader)
+    asDataFileReaderBoolean.hasNext()  
+  }
+
+  def asIteratorFromDataFile(infile: File): Iterator[X] = {
+    lazy val asDataFileReaderIterator: DataFileReader[X] = new DataFileReader[X](infile, asDatumReader)
+    asDataFileReaderIterator.iterator()
+  }
+
+  def asStringFromDataFile(infile: File): String = {
+    lazy val asDataFileReaderString: DataFileReader[X] = new DataFileReader[X](infile, asDatumReader)
+    asDataFileReaderString.toString()
+  }
+
+  //def asFileReaderFromDataFile(infile: File): FileReader[X] = {
+  //}
+  
 }
