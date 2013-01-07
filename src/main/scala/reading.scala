@@ -34,7 +34,7 @@ class AvroGenericDatumReader[X](schema: Schema)(implicit ctx: Context)
   def read(decoder: Decoder): X = {
     val collectingGenericData = new CollectingGenericData
     val collectingReader = new CollectingGenericDatumReader(schema, collectingGenericData)
-
+    
     collectingReader.read(null, decoder)
 
     val rootRecord = collectingGenericData.rootRecord
@@ -43,13 +43,16 @@ class AvroGenericDatumReader[X](schema: Schema)(implicit ctx: Context)
   }
 
   def applyValues(genericRecord: GenericData.Record): AnyRef = {
-    // println("-------- apply values -------")
-    // println("record = " + genericRecord)
-    // println("record.schema.fullName = " + genericRecord.getSchema.getFullName)
-    val values = genericRecord.getSchema.getFields.asScala.map(_.name).map(genericRecord.get(_))
-    // println("values = " + values)
-    // println("values classes = " + values.map(v => if (v != null) v.getClass else "null"))
-
+     //println("-------- apply values -------")
+     //println("record = " + genericRecord)
+     //println("record.schema.fullName = " + genericRecord.getSchema.getFullName)
+    val values = genericRecord.getSchema.getFields.asScala.map(_.name).map(genericRecord.get(_)) 
+      .map { //Strings are stored as Utf8 in .avro datafiles, need to be converted back to Java Strings when encountered
+      case utf8: org.apache.avro.util.Utf8 => utf8.toString()
+      case v => v
+    } 
+     //println("values = " + values + values(0))
+     //println("values classes = " + values.map(v => if (v != null) v.getClass else "null"))
     val grater: SingleAvroGrater[_] = ctx.lookup(genericRecord.getSchema.getFullName).get.asInstanceOf[SingleAvroGrater[_]]
 
     val arguments = grater._indexedFields.zip(values).map {
@@ -63,10 +66,11 @@ class AvroGenericDatumReader[X](schema: Schema)(implicit ctx: Context)
 //      case (field, _) => grater.safeDefault(field)
     }.map(_.getOrElse(None).asInstanceOf[AnyRef])
 
-    // println("arguments = " + arguments)
-    // println("argument classes = " + arguments.map(_.getClass))
+     //println("arguments = " + arguments + arguments(0))
+     //println("argument classes = " + arguments.map(_.getClass))
 
     grater._constructor.newInstance(arguments: _*).asInstanceOf[AnyRef]
+
   }
 
   protected class CollectingGenericData extends GenericData {
@@ -93,5 +97,7 @@ class AvroGenericDatumReader[X](schema: Schema)(implicit ctx: Context)
     }
   }
 
+
   protected class CollectingGenericDatumReader(schema: Schema, collector: CollectingGenericData) extends GenericDatumReader[Object](schema, schema, collector)
+
 }
