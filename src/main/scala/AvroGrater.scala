@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 T8 Webware
+ * Copyright 2011-2013 T8 Webware
  *   
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ trait AvroGrater[X <: AnyRef] {
   lazy val asDatumReader: AvroDatumReader[X] = asGenericDatumReader
   lazy val asGenericDatumReader: AvroGenericDatumReader[X] = new AvroGenericDatumReader[X](asAvroSchema)
 
-/*------------------------------IN-MEMORY------------------------------------------
+/*--------METHODS FOR IN-MEMORY SERIALIZATION/DESERIALIZATION-----------------------------------------
 Serialize to an in-memory stream with 'serialize', deserialize from in in-memory stream to an object with 'asObject'.
 */
 //writing to memory
@@ -53,7 +53,7 @@ Serialize to an in-memory stream with 'serialize', deserialize from in in-memory
 //Reading from memory
   def asObject(decoder: Decoder): X = asDatumReader.read(decoder)
 
-/*-----------------------TO/FROM AVRO DATAFILE-------------------------------------------------------
+/*---------------METHODS FOR SERIALIZATION/DESERIALIZATION TO/FROM AVRO DATAFILE-------------------------------------------------
 Serialize to an Avro file with serializeToDataFile, needs to be passed a schema, file, datum, and DataFileWriter, deserialize from file with asObjectFromDataFile
 */
 

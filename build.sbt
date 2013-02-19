@@ -1,21 +1,29 @@
+import com.banno.license.Plugin.LicenseKeys._
+import com.banno.license.Licenses._
+
+licenseSettings
+
+license := apache2("Copyright 2011-2013 T8 Webware")
+
+removeExistingHeaderBlock := true
+
 name := "salat-avro"
 
 version := "0.0.7.2-2-SNAPSHOT"
 
-organization := "com.banno"
+organization := "com.banno.salat.avro"
 
 // scalaVersion := "2.8.1"
 scalaVersion := "2.9.1"
 
-resolvers += "repo.scalatools rels" at "https://oss.sonatype.org/content/groups/scala-tools/"
+resolvers ++= Seq(
+  "repo.scalatools rels" at "https://oss.sonatype.org/content/groups/scala-tools/",
+  "repo.scalatools snaps" at "https://oss.sonatype.org/content/repositories/snapshots/",
+  "repo.novus rels" at "http://repo.novus.com/releases/",
+  "repo.novus snaps" at "http://repo.novus.com/snapshots/"
+)
 
-resolvers += "repo.scalatools snaps" at "https://oss.sonatype.org/content/repositories/snapshots/"
-
-resolvers += "repo.novus rels" at "http://repo.novus.com/releases/"
-
-resolvers += "repo.novus snaps" at "http://repo.novus.com/snapshots/"
-
-credentials += Credentials(Path.userHome / ".ivy2" / ".banno_credentials") //No logging argument like in sbt 0.7?
+credentials += Credentials(Path.userHome / ".ivy2" / ".banno_credentials")
 
 publishMavenStyle := true
 
