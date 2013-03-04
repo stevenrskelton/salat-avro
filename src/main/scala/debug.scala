@@ -34,9 +34,7 @@ object Main extends App {
   val myInt = 4
   val myBool = true 
 
-  //val myRecord = MyRecord(myName)
   val myRecord = MyRecord(myName, myInt, myBool)
-  //val myRecord = MyRecord(myInt)
     Console.println("original record:" + myRecord)
 
 /*------------------IN-MEMORY DATA SERIALIZATION------------------------
@@ -64,9 +62,8 @@ In order to write avro files we need to provide a schema  (obtained from a salat
 */
   
 //Serialize to an Avro DataFile
-  val schema: Schema = grater[MyRecord].asAvroSchema
   val outfile = new File("/home/julianpeeters/output.avro")
-  val avro = grater[MyRecord].serializeToDataFile(schema, outfile, myRecord)
+  val avro = grater[MyRecord].serializeToDataFile(outfile, myRecord)
 
 //Deserialize from File: Read DataFile and deserialize back to object 
   val infile = new File("/home/julianpeeters/input.avro")

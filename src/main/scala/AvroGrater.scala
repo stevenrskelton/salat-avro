@@ -61,8 +61,8 @@ Serialize to an Avro file with serializeToDataFile, needs to be passed a schema,
 
   lazy val asDataFileWriter: DataFileWriter[X] = new DataFileWriter[X](asDatumWriter) //Avro DatumWriter from above
 
-  def serializeToDataFile(schema: Schema, outfile: File, x: X): DataFileWriter[X] = try {
-    asDataFileWriter.create(schema, outfile)  
+  def serializeToDataFile(outfile: File, x: X): DataFileWriter[X] = try {
+    asDataFileWriter.create(asAvroSchema, outfile)  
     asDataFileWriter.append(x)          //TODO append more than one record
     asDataFileWriter.close
     asDataFileWriter
