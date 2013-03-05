@@ -104,7 +104,7 @@ Serialize a `Stream` of Avro records to an Avro Datafile with `serializeStreamTo
   
 
 /*-----------METHODS SERIALIZATION/DESERIALIZATION OF RECORD STREAMS TO/FROM AVRO DATAFILE-----------
-Serialize an `Iterator` of Avro records to an Avro Datafile with `serializeIteratorToDataFile` (a `Stream` can always be had from an iterator if one needs immutability at the risk of memory issues). `serializeIteratorToDataFile` appends to the file indiscriminately. If there is no file, the file is created.  Deserialization //TODO
+Serialize an `Iterator` of Avro records to an Avro Datafile with `serializeIteratorToDataFile` (a `Stream` can always be had from an iterator if one needs immutability at the risk of memory issues). `serializeIteratorToDataFile` appends to the file indiscriminately. If there is no file, the file is created.  Deserialization with asObjectIteratorFromDataFile, which converts the Java to a Scala `Iterator`
 */
 
 //Writing to File  
