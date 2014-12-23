@@ -23,14 +23,14 @@ import com.novus.salat.util.GraterGlitch
 import java.util.Comparator
 import java.util.concurrent.ConcurrentSkipListMap
 import scala.collection.mutable.SynchronizedQueue
-import scala.collection.JavaConversions.JConcurrentMapWrapper
-import scala.collection.mutable.{ ConcurrentMap }
 import java.util.concurrent.{ CopyOnWriteArrayList, ConcurrentHashMap }
 
 trait AvroContext extends Context {
 
   // since salat's graters is hidden from me, keeping my own collection
-  private[avro] val avroGraters: scala.collection.concurrent.Map[String, Grater[_ <: AnyRef]] = JConcurrentMapWrapper(new ConcurrentHashMap[String, Grater[_ <: AnyRef]]()) 
+  private[avro] val avroGraters: scala.collection.concurrent.Map[String, Grater[_ <: AnyRef]] = scala.collection.convert.Wrappers.JConcurrentMapWrapper(new ConcurrentHashMap[String, Grater[_ <: AnyRef]]()) 
+
+
 
   override def accept(grater: Grater[_ <: AnyRef]) = { 
     super.accept(grater)

@@ -56,8 +56,9 @@ package object avro {
 
   protected[avro] def isCaseClass(clazz: Class[_]) = clazz.getInterfaces.contains(classOf[Product])
 
-  protected[avro] def isCaseObject(clazz: Class[_]): Boolean = clazz.getInterfaces.contains(classOf[Product]) &&
-    clazz.getInterfaces.contains(classOf[ScalaObject]) && clazz.getName.endsWith("$")
+  protected[avro] def isCaseObject(clazz: Class[_]): Boolean = clazz.getInterfaces.contains(classOf[Product]) &&  clazz.getName.endsWith("$")
+   // useless post scala 2.11 https://groups.google.com/forum/#!topic/scala-user/lLRc_NOboLU
+   // clazz.getInterfaces.contains(classOf[ScalaObject]) 
 
 
    def resClass_!(c: String, classLoaders: Seq[ClassLoader]): Class[_] = resolveClass(c, classLoaders).getOrElse {
