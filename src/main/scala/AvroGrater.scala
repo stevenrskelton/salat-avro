@@ -53,7 +53,7 @@ Serialize to an in-memory stream with 'serialize', deserialize from in in-memory
   lazy val asGenericDatumReader: AvroGenericDatumReader[X] = new AvroGenericDatumReader[X](asAvroSchema)
 
 /*-----------METHODS FOR SERIALIZATION/DESERIALIZATION OF RECORDS TO/FROM AVRO DATAFILE-----------
-`serializeToDataFile` for single records, `serializeCollectionToFile` for serializing each record in a collection. `serializeIteratorToDataFile` appends to the file indiscriminately. If there is no file, the file is created.  Deserialization with asObjectsFile, which converts the Java to a Scala `Iterator` giving access to records, similar to an Avro DataFileReader. A `Stream` can always be had from an iterator if one needs immutability at the risk of memory issues(?).
+`serializeToDataFile` for single records. If there is no file, the file is created.  Deserialization with asObjectsFile, which converts the Java to a Scala `Iterator` giving access to records, similar to an Avro DataFileReader. A `Stream` can always be had from an iterator.
 */
 
 //Writing to File
@@ -69,23 +69,8 @@ Serialize to an in-memory stream with 'serialize', deserialize from in in-memory
     case e: Throwable => throw new AvroSerializationException(this, x, e)
   }
 
-  def serializeCollectionToFile(outfile: File, x: Iterator[X]): DataFileWriter[X] = try {
-    if (!outfile.exists()) asDataFileWriter.create(asAvroSchema, outfile) //check for pre-existing file
-    else asDataFileWriter.appendTo(outfile)
-
-    x.asInstanceOf[Iterator[X]].foreach(i => asDataFileWriter.append(i))
-
-    asDataFileWriter.close
-    asDataFileWriter
-  } catch {
-    case e: Throwable => throw new AvroSerializationException(this, x, e)
-  }
-
 //Reading from File
   def asSchemaFromFile(infile: File): Schema = {
-  //  val bufferedInfile = scala.io.Source.fromFile(infile, "iso-8859-1")
-  //  val parsable = bufferedInfile.getLine(0).dropWhile(_ != '{')
-
     val parsable = firstLine(infile).get.dropWhile(_ != '{')
     val schema = Schema.parse(parsable)
     schema
@@ -93,15 +78,11 @@ Serialize to an in-memory stream with 'serialize', deserialize from in in-memory
 
   def asObjectsFromFile(infile: File): Iterator[X] = {
     val schema = asSchemaFromFile(infile)
-    val asFileDatumReader: AvroDatumReader[X] = asGenericDatumReader
-//    val asFileGenericDatumReader: AvroGenericDatumReader[X] = new AvroGenericDatumReader[X](schema)
-    val asFileGenericDatumReader: AvroGenericDatumReader[X] = new AvroGenericDatumReader[X](asAvroSchema)
-
-    val asDataFileReader: DataFileReader[X] = new DataFileReader[X](infile, asDatumReader)
-    val objIterator = asDataFileReader.asScala
-                                      .iterator
-                                      .map(i => asGenericDatumReader.applyValues(i.asInstanceOf[GenericData.Record]).asInstanceOf[X])
-
+    val asFileDatumReader        = new AvroGenericDatumReader[GenericData.Record](schema)
+    val asDataFileReader         = new DataFileReader[GenericData.Record](infile, asFileDatumReader)
+    val objIterator              = asDataFileReader.asScala.iterator.map(i => {
+      asGenericDatumReader.applyValues(i).asInstanceOf[X]
+    })
     objIterator
   }
  

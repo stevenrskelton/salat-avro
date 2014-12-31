@@ -10,12 +10,13 @@ import org.apache.avro.Schema
 import org.specs2.matcher.JsonMatchers
 
 object BasicCaseClassSpec extends SalatAvroSpec with JsonMatchers {
+
+
   import models._
 
   "a grater" should {
     "make an avro schema for a basic case class" in {
       val schema = grater[Edward].asAvroSchema
-   //   println(schema)
       schema.getName must_== "union"
       val recordSchema = schema.getTypes().get(0)
       recordSchema.getName must_== "Edward"
@@ -37,10 +38,10 @@ object BasicCaseClassSpec extends SalatAvroSpec with JsonMatchers {
       println(json)
       json must /("com.banno.salat.avro.test.models.Edward") /("a" -> ed.a)
       json must /("com.banno.salat.avro.test.models.Edward") /("b" -> ed.b)
-     // json must /("com.banno.salat.avro.test.models.Edward") /("c" -> ed.c)
+    //  json must /("com.banno.salat.avro.test.models.Edward") /("c" -> ed.c) //
       json must /("com.banno.salat.avro.test.models.Edward") /("aa") /("string" -> ed.aa.get)
       json must /("com.banno.salat.avro.test.models.Edward") /("bb") /("int" -> ed.bb.get)
-     // json must /("com.banno.salat.avro.test.models.Edward") /("cc") /("double" -> ed.cc.get)
+    //  json must /("com.banno.salat.avro.test.models.Edward") /("cc") /("double" -> ed.cc.get) //
       json must /("com.banno.salat.avro.test.models.Edward") /("aaa" -> null)
       json must /("com.banno.salat.avro.test.models.Edward") /("bbb" -> null)
       json must /("com.banno.salat.avro.test.models.Edward") /("ccc" -> null)
@@ -66,15 +67,6 @@ object BasicCaseClassSpec extends SalatAvroSpec with JsonMatchers {
       println(newUser)
       newUser must_== oldUser 
     }   
-
-
-    "be able to serialize to Avro datafile a Scala Iterator[Record] with an optional list" in {
-      val oldDeps = Iterator[Department](Department(Some(List("me", "you"))), Department(Some(List("them")))) 
-      val(oldDepsOriginal, oldDepsCopy) = oldDeps.duplicate
-      val newDeps = serializeAndDeserializeIteratorFromDatafile(oldDepsCopy)
-
-      newDeps.toList must_== oldDepsOriginal.toList
-    }
 
   }
 

@@ -15,3 +15,4 @@ libraryDependencies ++= Seq(
   "com.github.nscala-time" %% "nscala-time" % "0.6.0",
   "org.apache.avro" % "avro" % "1.7.4"
 )
+

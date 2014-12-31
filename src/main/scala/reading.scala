@@ -62,11 +62,7 @@ class AvroGenericDatumReader[X](schema: Schema)(implicit ctx: Context)
       case (field, value) =>
         val inTransformer = Injectors.select(field.typeRefType).getOrElse(field.in)
         inTransformer.transform_!(value)
-//      case (field, _) => grater.safeDefault(field)
     }.map(_.getOrElse(None).asInstanceOf[AnyRef])
-
-    // println("arguments = " + arguments)
-     //println("argument classes = " + arguments.map(_.getClass))
 
     grater._constructor.newInstance(arguments: _*).asInstanceOf[AnyRef]
   }
