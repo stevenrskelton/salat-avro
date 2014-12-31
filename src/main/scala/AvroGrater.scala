@@ -69,16 +69,6 @@ Serialize to an in-memory stream with 'serialize', deserialize from in in-memory
     case e: Throwable => throw new AvroSerializationException(this, x, e)
   }
 
-  def serializeCollectionToFile(outfile: File, x: Iterator[X]): DataFileWriter[X] = try {
-    if (!outfile.exists()) asDataFileWriter.create(asAvroSchema, outfile) //check for pre-existing file
-    else asDataFileWriter.appendTo(outfile)
-    x.asInstanceOf[Iterator[X]].foreach(i => asDataFileWriter.append(i))
-    asDataFileWriter.close
-    asDataFileWriter
-  } catch {
-    case e: Throwable => throw new AvroSerializationException(this, x, e)
-  }
-
 //Reading from File
   def asSchemaFromFile(infile: File): Schema = {
     val parsable = firstLine(infile).get.dropWhile(_ != '{')
