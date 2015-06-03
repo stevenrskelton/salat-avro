@@ -9,6 +9,8 @@ import org.specs2.matcher.JsonMatchers
 object CaseClassGraphSpec extends SalatAvroSpec with JsonMatchers {
   import models._
 
+  sequential
+
   "a grater for nested case classes" should {
     "generate an avro schema" in {
       val schema = grater[Alice].asAvroSchema

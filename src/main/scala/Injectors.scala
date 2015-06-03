@@ -146,13 +146,12 @@ trait TraversableInjector extends Transformer {
 
 trait HashMapToMapInjector extends Transformer {
   self: Transformer =>
-  import scala.collection.JavaConverters._
 
   override def transform(value: Any)(implicit ctx: Context): Any = value
 
   override def after(value: Any)(implicit ctx: Context): Option[Any] = value match {
-    case jhm: java.util.HashMap[_,_] =>
-      val result = jhm.asScala.map {
+    case hm: scala.collection.mutable.HashMap[_,_] =>
+      val result = hm.map {
         case (k: Utf8, v: Utf8) => k.toString -> v.toString
         case (k: Utf8, v) => k.toString -> super.transform(v)
       }

@@ -59,6 +59,19 @@ class AvroGenericDatumReader[X](schema: Schema)(implicit ctx: Context)
         val inTransformer = Injectors.select(field.typeRefType).getOrElse(field.in)
         val applied = applyValues(record)
         inTransformer.transform_!(applied).orElse(Some(applied))
+      case (field, map: java.util.HashMap[_,_]) =>
+        import scala.collection.JavaConverters._
+        import scala.tools.scalap.scalax.rules.scalasig.TypeRefType
+        val kField = field.typeRefType.typeArgs(0).asInstanceOf[TypeRefType]
+        val vTransformer = Injectors.select(kField)
+        val scalaMap = map.asScala.map {
+          case (k, record: GenericData.Record) =>
+            val applied = applyValues(record)
+            (k, vTransformer.fold(applied)(_.transform_!(applied)))
+          case (k, v) => (k, v)
+        }
+        val inTransformer = Injectors.select(field.typeRefType).getOrElse(field.in)
+        inTransformer.transform_!(scalaMap)
       case (field, value) =>
         val inTransformer = Injectors.select(field.typeRefType).getOrElse(field.in)
         inTransformer.transform_!(value)

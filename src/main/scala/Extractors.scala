@@ -69,7 +69,7 @@ object Extractors {
       case t @ TypeRefType(prefix @ SingleType(_, esym), sym, _) if sym.path == "scala.Enumeration.Value" =>
         Some(new Transformer(prefix.symbol.path, t)(ctx) with EnumStringifier with MapExtractor)
 
-      case TypeRefType(_, symbol, _) if hint || ctx.asInstanceOf[AvroContext].lookp(symbol.path).isDefined => 
+      case TypeRefType(_, symbol, _) if hint /*|| ctx.asInstanceOf[AvroContext].lookp(symbol.path).isDefined) */=>
         Some(new Transformer(symbol.path, t)(ctx) with InContextToDBObject with MapExtractor {
           val grater = ctx.asInstanceOf[AvroContext].lookp(symbol.path)
         })

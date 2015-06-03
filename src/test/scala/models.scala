@@ -23,6 +23,10 @@ case class Edward(a:          String,           b:        Int,           c:     
 
 case class Fred(a: Alice, c: Option[Clara])
 
+case class George(g: Int, w: IMap[String, Basil])
+
+case class Henry(e: Alice, y: IMap[String, George])
+
 object Frakked extends Enumeration {
   val JustALittle = Value("just a little")
   val QuiteABit = Value("quite a bit")
